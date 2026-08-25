@@ -546,32 +546,51 @@ bool CVoiceStatus::IsLocalPlayerSpeaking( void )
 
 //-----------------------------------------------------------------------------
 // Purpose: blocks/unblocks the target client from being heard
-// Input  : playerID - 
-// Output : Returns true on success, false on failure.
+// Input  : playerID, block state
 //-----------------------------------------------------------------------------
 void CVoiceStatus::SetPlayerBlockedState(int iPlayer, bool blocked)
 {
-	if (voice_clientdebug.GetInt())
-	{
-		Msg( "CVoiceStatus::SetPlayerBlockedState part 1\n" );
-	}
+	VoiceBlockState_t state;
+	state.playerIndex = iPlayer;
+	state.blocked = blocked;
+	SetPlayersBlockedState( CUtlVector<VoiceBlockState_t>{ state } );
+}
 
-	player_info_t pi;
-	if ( !engine->GetPlayerInfo( iPlayer, &pi ) )
+//-----------------------------------------------------------------------------
+// Purpose: blocks/unblocks the target client(s) from being heard
+// Input  : vector of playerID, block state
+//-----------------------------------------------------------------------------
+void CVoiceStatus::SetPlayersBlockedState( const CUtlVector<int> &playerStates )
+{
+	if (playerStates.Count() == 0)
 		return;
 
-	if (voice_clientdebug.GetInt())
+	for ( int i = 0; i < playerStates.Count(); ++i )
 	{
-		Msg( "CVoiceStatus::SetPlayerBlockedState part 2\n" );
+		if (voice_clientdebug.GetInt())
+		{
+			Msg( "CVoiceStatus::SetPlayerBlockedState part 1\n" );
+		}
+
+		int iPlayer = playerStates[i].playerIndex;
+		player_info_t pi;
+		if ( !engine->GetPlayerInfo( iPlayer, &pi ) )
+			continue;
+
+		if (voice_clientdebug.GetInt())
+		{
+			Msg( "CVoiceStatus::SetPlayerBlockedState part 2\n" );
+		}
+
+		// Squelch or (try to) unsquelch this player.
+		if (voice_clientdebug.GetInt())
+		{
+			Msg("CVoiceStatus::SetPlayerBlockedState: setting player %d ban to %d\n", iPlayer, !m_BanMgr.GetPlayerBan(pi.guid));
+		}
+
+		m_BanMgr.SetPlayerBan(pi.guid, !m_BanMgr.GetPlayerBan(pi.guid));
 	}
 
-	// Squelch or (try to) unsquelch this player.
-	if (voice_clientdebug.GetInt())
-	{
-		Msg("CVoiceStatus::SetPlayerBlockedState: setting player %d ban to %d\n", iPlayer, !m_BanMgr.GetPlayerBan(pi.guid));
-	}
-
-	m_BanMgr.SetPlayerBan(pi.guid, !m_BanMgr.GetPlayerBan(pi.guid));
 	UpdateServerState(false);
 }
 
