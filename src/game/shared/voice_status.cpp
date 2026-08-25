@@ -550,17 +550,19 @@ bool CVoiceStatus::IsLocalPlayerSpeaking( void )
 //-----------------------------------------------------------------------------
 void CVoiceStatus::SetPlayerBlockedState(int iPlayer, bool blocked)
 {
+	CUtlVector<VoiceBlockState_t> playerState( 1 );
 	VoiceBlockState_t state;
 	state.playerIndex = iPlayer;
 	state.blocked = blocked;
-	SetPlayersBlockedState( CUtlVector<VoiceBlockState_t>{ state } );
+	playerState.AddToTail( state );
+	SetPlayersBlockedState( playerState );
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: blocks/unblocks the target client(s) from being heard
 // Input  : vector of playerID, block state
 //-----------------------------------------------------------------------------
-void CVoiceStatus::SetPlayersBlockedState( const CUtlVector<int> &playerStates )
+void CVoiceStatus::SetPlayersBlockedState( const CUtlVector<VoiceBlockState_t> &playerStates )
 {
 	if (playerStates.Count() == 0)
 		return;
