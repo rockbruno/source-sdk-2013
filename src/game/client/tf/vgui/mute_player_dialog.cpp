@@ -111,9 +111,9 @@ void CMutePlayerDialog::Activate()
 				if ( !engine->GetPlayerInfo( playerIndex, &pi ) )
 					continue;
 
-				// Don't add bots
-				if ( pi.fakeplayer )
-					continue;
+				// // Don't add bots
+				// if ( pi.fakeplayer )
+				// 	continue;
 
 				int nTeam = g_PR->GetTeam( playerIndex );
 
