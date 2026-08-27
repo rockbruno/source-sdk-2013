@@ -215,7 +215,7 @@ extern ConVar mp_developer;
 #define TF_SPY_STEALTH_BLINKSCALE  0.85f
 
 #define TF_BUILDING_PICKUP_RANGE 150
-#define TF_BUILDING_RESCUE_MIN_RANGE_SQ 62500  //250 * 250
+#define TF_BUILDING_RESCUE_MIN_RANGE_SQ 40000  //200 * 200
 #define TF_BUILDING_RESCUE_MAX_RANGE 5500
 
 #define TF_PLAYER_CONDITION_CONTEXT	"TFPlayerConditionContext"
@@ -12485,6 +12485,7 @@ bool CTFPlayer::CanPickupBuilding( CBaseObject *pPickupObject )
 	{
 		// False on deadzone
 		if ( nSqrDist > nPickUpRangeSq && nSqrDist < TF_BUILDING_RESCUE_MIN_RANGE_SQ )
+			DevMsg( "Deadzone %i \n", nSqrDist );
 			return false;
 		if ( nSqrDist >= TF_BUILDING_RESCUE_MIN_RANGE_SQ && GetAmmoCount( TF_AMMO_METAL ) < iIncreasedRangeCost )
 			return false;
